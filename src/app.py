@@ -63,7 +63,8 @@ def handle_users():
         # Creando una instancia de la clase Users
         user = Users(   email = data['email'],
                         password = data['password'],
-                        is_active = True)
+                        is_active = True,
+                        role = data['role'])
         db.session.add(user)
         db.session.commit()
         response_body['results'] = user.serialize() 

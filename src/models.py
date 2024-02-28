@@ -1,59 +1,108 @@
+
 from flask_sqlalchemy import SQLAlchemy
 
 
 db = SQLAlchemy()
 
 
+# Models Users
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    role = db.Column(db.Enum('Jedi', 'Sith', name='role'),nullable=False)
+    password = db.Column(db.String(80),  nullable=False)
 
     def __repr__(self):
-        return f'<User {self.id} - {self.email}>'
+        return f'<Users %r {self.id} - {self.email}>'
 
     def serialize(self):
         # do not serialize the password, its a security breach
         return {
             "id": self.id,
             "email": self.email,
-            'pass': self.password,
-            'is_active': self.is_active,
-            'role': self.role}
+            "pass": self.password,}
 
 
-class Planet(db.Model):
+# Models Planet Favorito
+
+class FavoritePlanets(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), unique=True, nullable=False)
-    is_favorite = db.Column(db.Boolean(), unique=False, nullable=False)
+    planets_id = db.Column(db.Integer, db.ForeignKey('planets.id'), unique=True, nullable=False)
+    users_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True, nullable=False)
+    user_to = db.relationship('Users', foreign_keys=[users_id])
 
     def __repr__(self):
-        return '<Planet %r>' % self.id
+        return f'<FavoritePlanets %r {self.id} - {self.planets_id} - {self.users_id}>'
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "planets_id": self.planets_id,
+            "users_id": self.users_id,
+        }
+
+
+# Models Planets
+class Planets(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    diameter = db.Column(db.Integer)
+    rotation_period = db.Column(db.Integer)
+    orbital_period = db.Column(db.Integer)
+    gravity = db.Column(db.String(50))
+    favorite_planets = db.relationship('FavoritePlanets', backref='planet', uselist=False)
+
+    def __repr__(self):
+        return f'<Planets %r {self.id} - {self.name}>'
 
     def serialize(self):
-        # do not serialize the password, its a security breach
         return {
             "id": self.id,
             "name": self.name,
-            'is_favorite': self.is_favorite}
+            "diameter": self.diameter,
+            "rotation_period": self.rotation_period,
+            "orbital_period": self.orbital_period,
+            "gravity": self.gravity,
+        }
 
-class People(db.Model):
+
+# Models People Favorite
+class FavoritePeople(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(120), unique=True, nullable=False)
-    last_name = db.Column(db.String(120), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    is_favorite = db.Column(db.Boolean(), unique=False, nullable=False)
+    people_id = db.Column(db.Integer, db.ForeignKey('people.id'), unique=True, nullable=False)
+    users_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True, nullable=False)
+    user_to = db.relationship('Users', foreign_keys=[users_id])
 
     def __repr__(self):
-        return '<People %r>' % self.id
-
+        return f'<FavoritePeople %r {self.id} - {self.people_id} - {self.users_id}>'
+    
     def serialize(self):
-        # do not serialize the password, its a security breach
         return {
             "id": self.id,
-            "firstname": self.first_name,
-            "lastname": self.last_name,
-            "email": self.email,
-            'is_favorite': self.is_favorite}
+            "people_id": self.people_id,
+            "users_id": self.users_id,
+        }
+
+    
+
+# Models People
+class People(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    gender = db.Column(db.Enum('Female', 'Male', name="gender"))
+    height = db.Column(db.Integer)
+    mass = db.Column(db.Integer)
+    hair_color = db.Column(db.String(50))
+    favorite_people = db.relationship('FavoritePeople', backref='person', uselist=False)
+
+    def __repr__(self):
+        return f'<People %r {self.id} - {self.name}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "gender": self.gender,
+            "height": self.height,
+            "mass": self.mass,
+            "hair_color": self.hair_color,
+        }

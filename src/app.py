@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, Users, Planet, People
+from models import db, Users, Planets, People, FavoritePeople, FavoritePlanets
 
 
 # Instancias de configuracion
@@ -62,9 +62,7 @@ def handle_users():
         data = request.json
         # Creando una instancia de la clase Users
         user = Users(   email = data['email'],
-                        password = data['password'],
-                        is_active = True,
-                        role = data['role'])
+                        password = data['password'],)
         db.session.add(user)
         db.session.commit()
         response_body['results'] = user.serialize() 
@@ -94,8 +92,8 @@ def handle_people():
 
 # Endpoint GET people por ID
 @app.route('/people/<int:people_id>', methods=['GET'])
-def handle_people_id(id):
-    response_body['message'] = 'Metodo GET de un people/id'
+def handle_people_id():
+    response_body = {"msg": "Hello, this is your GET /people for ID response"}
     return jsonify(response_body), 200
 
 # Endpoint GET planets TODOS
@@ -105,48 +103,42 @@ def handle_planet():
     return jsonify(response_body), 200
 
 # Endpoint GET planets por ID
-@app.route('/planets/<int:people_id>', methods=['GET'])
-def handle_planets(id):
-    response_body['message'] = 'Metodo GET de un planets/id'
-    return jsonify(response_body), 200
-
-# Endpoint GET users/favorites TODOS
-@app.route('/users/favorites', methods=['GET'])
-def handle_users_fav():
-    response_body = {"msg": "Hello, this is your GET /users/favorites response"}
+@app.route('/planets/<int:planet_id>', methods=['GET'])
+def handle_planet_id():
+    response_body = {"msg": "Hello, this is your GET /planets for ID response"}
     return jsonify(response_body), 200
 
 # Endpoint POST y DELETE favorite planet
-@app.route('/favorite/planet/<int:planet_id>', methods=['POST', 'DELETE'])
-def handle_planet_id(id):
+# En el ejercicio se nos pide hacer un metodo POST, en clase se comento que no tenia mucho sentido y se ccambio a GET
+@app.route('/favorite/planet/<int:planet_id>', methods=['GET', 'DELETE'])
+def handle_planet_idf(id):
     response_body = {}
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = request.json
-        planet = Planet(name = data['name'],
-                        is_favorite = data['is_favorite'])
+        planet = Planet(planets_id = data['planets_id'],
+                        users_id = data['users_id'])
         db.session.add(planet)
         db.session.commit()
         response_body['results'] = planet.serialize() 
-        response_body['message'] = 'Metodo POST favorite/planet por ID'
+        response_body['message'] = 'Metodo GET favorite/planet por ID'
         return response_body, 200
     if request.method == 'DELETE':
         response_body['message'] = 'Metodo DELETE de un favorite/planet/id'
         return response_body, 200
 
 # Endpoint POST y DELETE favorite people
-@app.route('/favorite/people/<int:people_id>', methods=['POST', 'DELETE'])
+# En el ejercicio se nos pide hacer un metodo POST, en clase se comento que no tenia mucho sentido y se ccambio a GET
+@app.route('/favorite/people/<int:people_id>', methods=['GET', 'DELETE'])
 def handle_people_fav(id):
     response_body = {}
-    if request.method == 'POST':
+    if request.method == 'GET':
         data = request.json
-        people = People(firstname = data['first_name'],
-                        lastname = data['last_name'],
-                        email = data['email'],
-                        is_favorite = data['is_favorite'])
+        people = People(people_id = data['people_id'],
+                        users_id = data['users_id'],)
         db.session.add(people)
         db.session.commit()
         response_body['results'] = people.serialize() 
-        response_body['message'] = 'Metodo POST favorite/people por ID'
+        response_body['message'] = 'Metodo GET favorite/people por ID'
         return response_body, 200
     if request.method == 'DELETE':
         response_body['message'] = 'Metodo DELETE de un favorite/people/id'

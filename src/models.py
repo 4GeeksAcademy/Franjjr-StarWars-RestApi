@@ -7,12 +7,13 @@ db = SQLAlchemy()
 
 # Models Users
 class Users(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80),  nullable=False)
 
     def __repr__(self):
-        return f'<Users %r {self.id} - {self.email}>'
+        return f'<Users {self.id} - {self.email}>'
 
     def serialize(self):
         # do not serialize the password, its a security breach
@@ -25,13 +26,14 @@ class Users(db.Model):
 # Models Planet Favorito
 
 class FavoritePlanets(db.Model):
+    __tablename__ = 'favorite_planets'
     id = db.Column(db.Integer, primary_key=True)
     planets_id = db.Column(db.Integer, db.ForeignKey('planets.id'), unique=True, nullable=False)
     users_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True, nullable=False)
     user_to = db.relationship('Users', foreign_keys=[users_id])
 
     def __repr__(self):
-        return f'<FavoritePlanets %r {self.id} - {self.planets_id} - {self.users_id}>'
+        return f'<FavoritePlanets {self.id} - {self.planets_id} - {self.users_id}>'
     
     def serialize(self):
         return {
@@ -43,6 +45,7 @@ class FavoritePlanets(db.Model):
 
 # Models Planets
 class Planets(db.Model):
+    __tablename__ = 'planets'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     diameter = db.Column(db.Integer)
@@ -52,7 +55,7 @@ class Planets(db.Model):
     favorite_planets = db.relationship('FavoritePlanets', backref='planet', uselist=False)
 
     def __repr__(self):
-        return f'<Planets %r {self.id} - {self.name}>'
+        return f'<Planets {self.id} - {self.name}>'
 
     def serialize(self):
         return {
@@ -67,13 +70,15 @@ class Planets(db.Model):
 
 # Models People Favorite
 class FavoritePeople(db.Model):
+    __tablename__ = 'favorite_people'
     id = db.Column(db.Integer, primary_key=True)
     people_id = db.Column(db.Integer, db.ForeignKey('people.id'), unique=True, nullable=False)
     users_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True, nullable=False)
     user_to = db.relationship('Users', foreign_keys=[users_id])
+    people_to = db.relationship('People', foreign_keys=[people_id])
 
     def __repr__(self):
-        return f'<FavoritePeople %r {self.id} - {self.people_id} - {self.users_id}>'
+        return f'<FavoritePeople {self.id} - {self.people_id} - {self.users_id}>'
     
     def serialize(self):
         return {
@@ -86,6 +91,7 @@ class FavoritePeople(db.Model):
 
 # Models People
 class People(db.Model):
+    __tablename__ = 'people'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     gender = db.Column(db.Enum('Female', 'Male', name="gender"))
@@ -95,7 +101,7 @@ class People(db.Model):
     favorite_people = db.relationship('FavoritePeople', backref='person', uselist=False)
 
     def __repr__(self):
-        return f'<People %r {self.id} - {self.name}>'
+        return f'<People {self.id} - {self.name}>'
 
     def serialize(self):
         return {

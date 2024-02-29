@@ -108,6 +108,22 @@ def handle_planet_id():
     response_body = {"msg": "Hello, this is your GET /planets for ID response"}
     return jsonify(response_body), 200
 
+# Endpoint POST p[lanet Favoritos
+@app.route('/favorite/<int:user_id>/planets' methods=['POST'])
+def add_favorite_planets(user_id):
+    response_body = {}
+    data = request.json
+    print(data)
+    # Tomar una instancia de la Base de Datos FavoritePlanets
+    favorite = FavoritePlanets(
+        user_id = user_id
+        planet_id = data['planet_id'])
+    db.session.add(favorite)
+    db.session.commit()
+    #
+    response_body['message'] = f'Respode el POST de favorite planets del usuario: {user_id}'
+    return response_body
+
 # Endpoint POST y DELETE favorite planet
 # En el ejercicio se nos pide hacer un metodo POST, en clase se comento que no tenia mucho sentido y se ccambio a GET
 @app.route('/favorite/planet/<int:planet_id>', methods=['GET', 'DELETE'])

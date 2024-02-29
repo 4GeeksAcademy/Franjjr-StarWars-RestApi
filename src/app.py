@@ -71,7 +71,7 @@ def handle_users():
 
 # Endpoint para un usuario por id
 @app.route('/users/<int:id>', methods=['GET', 'PUT', 'DELETE'])
-def handle_user(id):
+def handle_user(user_id):
     response_body = {}
     print(id)
     if request.method == 'GET':
@@ -87,47 +87,75 @@ def handle_user(id):
 # Endpoint GET people TODOS
 @app.route('/people', methods=['GET'])
 def handle_people():
-    response_body = {"msg": "Hello, this is your GET /people response"}
+    response_body = {}
+    people = db.session.execute(db.select(People)).scalars()
+    response_body['results'] = [row.serialize() for row in people]
+    response_body['message'] = 'Metodo GET people'
     return jsonify(response_body), 200
 
 # Endpoint GET people por ID
 @app.route('/people/<int:people_id>', methods=['GET'])
-def handle_people_id():
-    response_body = {"msg": "Hello, this is your GET /people for ID response"}
+def handle_people_id(people_id):
+    response_body = {}
+    people = db.session.execute(db.select(People)).scalar()
+    response_body['results'] = [row.serialize() for row in people]
+    response_body['message'] = 'Metodo GET people for ID'
     return jsonify(response_body), 200
 
 # Endpoint GET planets TODOS
 @app.route('/planets', methods=['GET'])
 def handle_planet():
-    response_body = {"msg": "Hello, this is your GET /planets response"}
+    response_body = {}
+    planet = db.session.execute(db.select(Planets)).scalars()
+    response_body['results'] = [row.serialize() for row in planet]
+    response_body['message'] = 'Metodo GET planets'
     return jsonify(response_body), 200
 
 # Endpoint GET planets por ID
 @app.route('/planets/<int:planet_id>', methods=['GET'])
-def handle_planet_id():
-    response_body = {"msg": "Hello, this is your GET /planets for ID response"}
+def handle_planet_id(planet_id):
+    response_body = {}
+    planet = db.session.execute(db.select(Planets)).scalar()
+    response_body['results'] = [row.serialize() for row in planet]
+    response_body['message'] = 'Metodo GET planets for ID'
     return jsonify(response_body), 200
 
-# Endpoint POST p[lanet Favoritos
-@app.route('/favorite/<int:user_id>/planets' methods=['POST'])
-def add_favorite_planets(user_id):
+# Endpoint POST planet Favoritos
+@app.route('/favorite/<int:user_id>/planets', methods=['POST'])
+def add_favorite_planets(users_id):
     response_body = {}
     data = request.json
     print(data)
     # Tomar una instancia de la Base de Datos FavoritePlanets
     favorite = FavoritePlanets(
-        user_id = user_id
-        planet_id = data['planet_id'])
+        users_id = users_id,
+        planets_id = data['planets_id'])
     db.session.add(favorite)
     db.session.commit()
     #
     response_body['message'] = f'Respode el POST de favorite planets del usuario: {user_id}'
     return response_body
 
+# Endpoint POST de people favoritos
+@app.route('/favorite/<int:user_id>/people', methods=['POST'])
+def add_favorite_people(user_id):
+    response_body = {}
+    data = request.json
+    print(data)
+    # tomamos instancia de la base de datos
+    favorite = FavoritePeople(
+        users_id = user_id,
+        people_id = data['people_id'])
+    db.session.add(favorite)
+    db.session.commit()
+    #
+    response_body['message'] = f'Respode el POST de favorite people del usuario: {user_id}'
+    return response_body
+
+
 # Endpoint POST y DELETE favorite planet
-# En el ejercicio se nos pide hacer un metodo POST, en clase se comento que no tenia mucho sentido y se ccambio a GET
 @app.route('/favorite/planet/<int:planet_id>', methods=['GET', 'DELETE'])
-def handle_planet_idf(id):
+def handle_planet_fav(id):
     response_body = {}
     if request.method == 'GET':
         data = request.json
@@ -143,7 +171,6 @@ def handle_planet_idf(id):
         return response_body, 200
 
 # Endpoint POST y DELETE favorite people
-# En el ejercicio se nos pide hacer un metodo POST, en clase se comento que no tenia mucho sentido y se ccambio a GET
 @app.route('/favorite/people/<int:people_id>', methods=['GET', 'DELETE'])
 def handle_people_fav(id):
     response_body = {}

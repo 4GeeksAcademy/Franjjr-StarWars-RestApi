@@ -21,6 +21,7 @@ class Users(db.Model):
                 "email": self.email,
                 "pass": self.password}
 
+
 # Models People
 class People(db.Model):
     __tablename__ = 'people'
@@ -53,7 +54,6 @@ class Planets(db.Model):
     orbital_period = db.Column(db.Integer)
     gravity = db.Column(db.String(50))
     # favorite_planets = db.relationship('FavoritePlanets', backref='planet', uselist=False)
-
     def __repr__(self):
         return f'<Planets {self.id} - {self.name}>'
 
@@ -64,6 +64,7 @@ class Planets(db.Model):
                 "rotation_period": self.rotation_period,
                 "orbital_period": self.orbital_period,
                 "gravity": self.gravity}
+
 
 # Models Planet Favorito
 class FavoritePlanets(db.Model):
@@ -81,6 +82,7 @@ class FavoritePlanets(db.Model):
         return {"id": self.id,
                 "planets_id": self.planets_id,
                 "users_id": self.users_id}
+
 
 # Models People Favorite
 class FavoritePeople(db.Model):

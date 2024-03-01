@@ -17,10 +17,9 @@ class Users(db.Model):
 
     def serialize(self):
         # do not serialize the password, its a security breach
-        return {
-            "id": self.id,
-            "email": self.email,
-            "pass": self.password,}
+        return {"id": self.id,
+                "email": self.email,
+                "pass": self.password}
 
 # Models People
 class People(db.Model):
@@ -32,19 +31,16 @@ class People(db.Model):
     mass = db.Column(db.Integer)
     hair_color = db.Column(db.String(50))
     # favorite_people = db.relationship('FavoritePeople', backref='person', uselist=False)
-
     def __repr__(self):
         return f'<People {self.id} - {self.name}>'
 
     def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "gender": self.gender,
-            "height": self.height,
-            "mass": self.mass,
-            "hair_color": self.hair_color,
-        }
+        return {"id": self.id,
+                "name": self.name,
+                "gender": self.gender,
+                "height": self.height,
+                "mass": self.mass,
+                "hair_color": self.hair_color}
 
 
 # Models Planets
@@ -62,17 +58,14 @@ class Planets(db.Model):
         return f'<Planets {self.id} - {self.name}>'
 
     def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "diameter": self.diameter,
-            "rotation_period": self.rotation_period,
-            "orbital_period": self.orbital_period,
-            "gravity": self.gravity,
-        }
+        return {"id": self.id,
+                "name": self.name,
+                "diameter": self.diameter,
+                "rotation_period": self.rotation_period,
+                "orbital_period": self.orbital_period,
+                "gravity": self.gravity}
 
 # Models Planet Favorito
-
 class FavoritePlanets(db.Model):
     __tablename__ = 'favorite_planets'
     id = db.Column(db.Integer, primary_key=True)
@@ -87,7 +80,7 @@ class FavoritePlanets(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "planets_id": self.planets_id,
-                "users_id": self.users_id,}
+                "users_id": self.users_id}
 
 # Models People Favorite
 class FavoritePeople(db.Model):
@@ -102,11 +95,9 @@ class FavoritePeople(db.Model):
         return f'<FavoritePeople {self.id} - {self.people_id} - {self.users_id}>'
     
     def serialize(self):
-        return {
-            "id": self.id,
-            "people_id": self.people_id,
-            "users_id": self.users_id,
-        }
+        return {"id": self.id,
+                "people_id": self.people_id,
+                "users_id": self.users_id,}
 
     
 
